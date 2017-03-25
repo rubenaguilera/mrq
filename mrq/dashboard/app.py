@@ -236,6 +236,12 @@ def api_datatables(unit):
         collection = connections.mongodb_jobs.mrq_scheduled_jobs
         fields = None
         query = {}
+        if (request.args.get("name")):
+            query["path"] = request.args.get("name")
+        if (request.args.get("interval")):
+            query["interval"] = request.args.get("interval")
+        if (request.args.get("params")):
+            query["params"] = request.args.get("params")
 
     elif unit == "jobs":
 
