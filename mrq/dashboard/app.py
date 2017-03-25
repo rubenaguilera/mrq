@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+from click.decorators import group
 from future import standard_library
 standard_library.install_aliases()
 from future.utils import iteritems
@@ -52,11 +54,19 @@ def root():
 @app.route('/api/datatables/taskexceptions')
 @requires_auth
 def api_task_exceptions():
-    stats = list(connections.mongodb_jobs.mrq_jobs.aggregate([
-        {"$match": {"status": "failed"}},
-        {"$group": {"_id": {"path": "$path", "exceptiontype": "$exceptiontype"},
-                    "jobs": {"$sum": 1}}},
-    ]))
+    group_criteria = list()
+    group_criteria.append({"$match": {"status": "failed"}})
+
+    if (request.args.get("name")):
+        group_criteria.append({"$match": {"path": request.args.get("name")}})
+
+    if (request.args.get("exception")):
+        group_criteria.append({"$match": {"exceptiontype": request.args.get("exception")}})
+
+    group_criteria.append({"$group": {"_id": {"path": "$path", "exceptiontype": "$exceptiontype"},
+                                      "jobs": {"$sum": 1}}})
+
+    stats = list(connections.mongodb_jobs.mrq_jobs.aggregate(group_criteria))
 
     stats.sort(key=lambda x: -x["jobs"])
     start = int(request.args.get("iDisplayStart", 0))
@@ -96,10 +106,17 @@ def api_jobstatuses():
 @app.route('/api/datatables/taskpaths')
 @requires_auth
 def api_taskpaths():
-    stats = list(connections.mongodb_jobs.mrq_jobs.aggregate([
-        {"$sort": {"path": 1}},  # https://jira.mongodb.org/browse/SERVER-11447
-        {"$group": {"_id": "$path", "jobs": {"$sum": 1}}}
-    ]))
+    group_criteria = list()
+
+    group_criteria.append({"$sort": {"path": 1}})
+
+    if request.args.get("name"):
+        name = request.args.get("name")
+        group_criteria.append({"$match": {"path": name}})
+
+    group_criteria.append({"$group": {"_id": "$path", "jobs": {"$sum": 1}}})
+
+    stats = list(connections.mongodb_jobs.mrq_jobs.aggregate(group_criteria))
 
     stats.sort(key=lambda x: -x["jobs"])
 
