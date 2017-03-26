@@ -16,7 +16,8 @@ require.config({
     datatables: "/static/js/vendor/jquery.dataTables.min",
     datatablesbs3: "/static/js/vendor/datatables.bs3",
     moment: "/static/js/vendor/moment.min",
-    sparkline: "/static/js/vendor/jquery.sparkline.min"
+    sparkline: "/static/js/vendor/jquery.sparkline.min",
+    daterangepicker: "/static/js/vendor/daterangepicker"
   },
 
   urlArgs: "bust=" +  (new Date()).getTime(),

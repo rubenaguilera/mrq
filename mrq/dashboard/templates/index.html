@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/jquery.circliful.css" media="screen">
     <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" media="screen">
     <link rel="stylesheet" href="/static/css/datatables.css" media="screen">
+    <link rel="stylesheet" href="/static/css/daterangepicker.css" media="screen">
     <link rel="stylesheet" href="/static/css/mrq-dashboard.css" media="screen">
     <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
 
@@ -87,11 +88,17 @@
 
         </div>
       </div>
+      <div class="container">
+        <label class="control-label" style="float: left;margin-right: 5px;">Date Range Filter: </label>
+        <input type="text" id="time_filter" class="form-control input-sm js-datatable-filters-daterange"
+               style="width: 280px;float: left;margin-right: 5px;">
+        <button class="btn btn-default input-sm" id="time-filter-submit" style="padding:5px">
+          OK
+        </button>
+      </div>
     </div>
 
-
-    <div class="container" style="margin-top:52px;">
-
+    <div class="container" style="margin-top:92px;">
       <div id="app-container">
 
         <div class="ox-loader">
