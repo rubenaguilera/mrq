@@ -1,4 +1,4 @@
-define(["backbone", "underscore", "jquery"],function(Backbone, _, $) {
+define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],function(Backbone, _, $, moment) {
 
   /**
    * A generic page, that can have sub-pages.
@@ -12,8 +12,59 @@ define(["backbone", "underscore", "jquery"],function(Backbone, _, $) {
     // This will be called once before the first render only.
     init:function() {
       this.counters = {};
+      this.initTimeFilter();
     },
     initok:false,
+
+    initTimeFilter: function () {
+      var todayRange = this.timeFilter.getTodayRange();
+      var yesterdayRange = this.timeFilter.getYesterdayRange();
+      var last7DaysRange = this.timeFilter.getLastXDays(7);
+      var last30DaysRange = this.timeFilter.getLastXDays(30);
+      var thisMonthRange = this.timeFilter.getThisMonthRange();
+      var lastMonthRange = this.timeFilter.getLastMonthRange();
+      $('#time_filter').daterangepicker({
+        "timePicker24Hour": true,
+        "locale": {
+          "format": "MM/DD/YYYY HH:mm",
+        },
+        "ranges": {
+          "Today": [
+            todayRange.start,
+            todayRange.end
+          ],
+          "Yesterday": [
+            yesterdayRange.start,
+            yesterdayRange.end
+          ],
+          "Last 7 Days": [
+            last7DaysRange.start,
+            last7DaysRange.end
+          ],
+          "Last 30 Days": [
+            last30DaysRange.start,
+            last30DaysRange.end
+          ],
+          "This Month": [
+            thisMonthRange.start,
+            thisMonthRange.end
+          ],
+          "Last Month": [
+            lastMonthRange.start,
+            lastMonthRange.end
+          ]
+        },
+      }, function (start, end, label) {
+        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+      });
+      var self = this;
+      $('.clear-date-range-filter').click(function(){
+        $('#time_filter').val('');
+      });
+      $('#time-filter-submit').click(function(){
+        self.filterschanged();
+      });
+    },
 
     addChildPage: function(id, childPage) {
       if (!this.childPages) this.childPages = {};
@@ -201,6 +252,101 @@ define(["backbone", "underscore", "jquery"],function(Backbone, _, $) {
 
     render:function() {
       return this;
+    },
+
+    filterschanged:function(evt) {
+      //overload me
+    },
+
+    timeFilter: {
+      getTodayRange: function(){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart = this.getBeginingOfDay(dateStart);
+        dateEnd = this.getEndOfDay(dateEnd);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
+      getYesterdayRange: function(){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart.setDate(dateStart.getDate() - 1);
+        dateStart = this.getBeginingOfDay(dateStart);
+
+        dateEnd.setDate(dateEnd.getDate() - 1);
+        dateEnd = this.getEndOfDay(dateEnd);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
+      getLastXDays: function(x){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart.setDate(dateStart.getDate() - x);
+        dateStart = this.getBeginingOfDay(dateStart);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
+      getThisMonthRange: function(){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart = this.getBeginingOfMonth(dateStart);
+
+        dateEnd = this.getEndOfMonth(dateEnd);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
+      getLastMonthRange: function(){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart.setMonth(dateStart.getMonth() - 1);
+        dateStart = this.getBeginingOfMonth(dateStart);
+
+        dateEnd.setMonth(dateEnd.getMonth() - 1);
+        dateEnd = this.getEndOfMonth(dateEnd);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
+
+      getBeginingOfDay: function (date) {
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
+        return date;
+      },
+      getEndOfDay: function (date) {
+        date.setHours(23);
+        date.setMinutes(59);
+        date.setSeconds(59);
+        date.setMilliseconds(999);
+        return date;
+      },
+      getBeginingOfMonth: function (date) {
+        date.setDate(1);
+        date = this.getBeginingOfDay(date);
+        return date;
+      },
+      getEndOfMonth: function (date) {
+        date.setMonth(date.getMonth() + 1);
+        date = this.getBeginingOfMonth(date);
+        date.setMilliseconds(-1);
+        return date;
+      },
+      getBeginingOfYear: function (date) {
+        date.setMonth(0);
+        date = this.getBeginingOfMonth(date);
+        return date;
+      }
     }
   });
 
