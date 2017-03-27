@@ -242,6 +242,29 @@ def api_datatables(unit):
         fields = None
         query = build_api_datatables_query(request)
         sort = [("_id", 1)]
+        if request.args.get("iSortCol_0") == "0":
+            if (request.args.get("sSortDir_0") == "desc"):
+                sort = [("_id", -1)]
+        elif(request.args.get("iSortCol_0") == "2"):
+            if (request.args.get("sSortDir_0") == "asc"):
+                sort = [("status", 1)]
+            elif (request.args.get("sSortDir_0") == "desc"):
+                sort = [("status", -1)]
+        elif (request.args.get("iSortCol_0") == "3"):
+            if (request.args.get("sSortDir_0") == "asc"):
+                sort = [("datestarted", 1)]
+            elif (request.args.get("sSortDir_0") == "desc"):
+                sort = [("datestarted", -1)]
+        elif (request.args.get("iSortCol_0") == "4"):
+            if (request.args.get("sSortDir_0") == "asc"):
+                sort = [("queue", 1)]
+            elif (request.args.get("sSortDir_0") == "desc"):
+                sort = [("queue", -1)]
+        elif (request.args.get("iSortCol_0") == "5"):
+            if (request.args.get("sSortDir_0") == "asc"):
+                sort = [("worker", 1)]
+            elif (request.args.get("sSortDir_0") == "desc"):
+                sort = [("worker", -1)]
 
         # We can't search easily params because we store it as decoded JSON in mongo :(
         # Add a string index?
