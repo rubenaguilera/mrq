@@ -15,6 +15,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
         "name": this.options.params.name || "",
         "exception": this.options.params.exception || ""
       };
+      this.updateTimeFilterClickBind(this);
     },
 
     setOptions: function (options) {

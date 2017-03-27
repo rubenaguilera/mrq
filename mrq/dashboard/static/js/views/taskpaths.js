@@ -14,6 +14,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
       this.filters = {
         "name": this.options.params.name || "",
       };
+      this.unbindTimeFilterClick();
     },
 
     setOptions: function (options) {

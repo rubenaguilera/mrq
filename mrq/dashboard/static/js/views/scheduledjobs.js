@@ -17,6 +17,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
         "last_queued": this.options.params.last_queued || "",
         "params": this.options.params.params || ""
       };
+      this.updateTimeFilterClickBind(this);
     },
 
     setOptions: function (options) {

@@ -10,7 +10,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment
     },
 
     renderDatatable:function() {
-
+      this.unbindTimeFilterClick();
       var self = this;
 
       var datatableConfig = self.getCommonDatatableConfig("status");

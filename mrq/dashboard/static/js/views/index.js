@@ -120,6 +120,7 @@ define(["jquery", "underscore", "views/generic/page", "models", "moment", "circl
       self.renderTemplate();
       self.fetchStats(self.renderStats);
       self.autoUpdateStats();
+      this.unbindTimeFilterClick();
     },
 
     autoUpdateStats: function() {

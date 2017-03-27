@@ -19,7 +19,6 @@ define(["views/generic/page", "jquery",
     isTabVisible: true,
 
     init: function() {
-
       var self = this;
 
       // We want to reload once when the autorefresh rate changes

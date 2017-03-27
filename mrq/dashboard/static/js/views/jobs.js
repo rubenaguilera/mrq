@@ -1,4 +1,4 @@
-define(["jquery", "underscore", "views/generic/datatablepage", "models"],function($, _, DataTablePage, Models) {
+define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment"],function($, _, DataTablePage, Models, moment) {
 
   return DataTablePage.extend({
 
@@ -9,7 +9,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
     events:{
       "click .js-datatable-filters-submit": "filterschanged",
       "click .js-datatable .js-actions button": "row_jobaction",
-      "click button.js-jobs-groupaction": "groupaction"
+      "click button.js-jobs-groupaction": "groupaction",
     },
 
     initFilters: function() {
@@ -21,7 +21,9 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
         "exceptiontype": this.options.params.exceptiontype||"",
         "params": this.options.params.params||"",
         "id": this.options.params.id||"",
+        "daterange": this.options.params.daterange||""
       };
+      this.updateTimeFilterClickBind(this);
     },
 
     setOptions:function(options) {
@@ -435,6 +437,8 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models"],functio
       _.each(self.filters, function(v, k) {
         self.filters[k] = self.$(".js-datatable-filters-"+k).val();
       });
+
+      self.filters.daterange = $(".js-datatable-filters-daterange").val();
 
       window.location = "/#jobs?"+$.param(self.filters, true).replace(/\+/g, "%20");
     },

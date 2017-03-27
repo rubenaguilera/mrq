@@ -23,10 +23,12 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
       var last30DaysRange = this.timeFilter.getLastXDays(30);
       var thisMonthRange = this.timeFilter.getThisMonthRange();
       var lastMonthRange = this.timeFilter.getLastMonthRange();
+      var thisYearRange = this.timeFilter.getThisYearRange();
       $('#time_filter').daterangepicker({
         "timePicker24Hour": true,
+        "timePicker": true,
         "locale": {
-          "format": "MM/DD/YYYY HH:mm",
+          "format": "DD/MM/YYYY HH:mm",
         },
         "ranges": {
           "Today": [
@@ -52,17 +54,17 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
           "Last Month": [
             lastMonthRange.start,
             lastMonthRange.end
+          ],
+          "This Year": [
+            thisYearRange.start,
+            thisYearRange.end
           ]
         },
       }, function (start, end, label) {
-        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
       });
       var self = this;
       $('.clear-date-range-filter').click(function(){
         $('#time_filter').val('');
-      });
-      $('#time-filter-submit').click(function(){
-        self.filterschanged();
       });
     },
 
@@ -254,8 +256,14 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
       return this;
     },
 
-    filterschanged:function(evt) {
-      //overload me
+    updateTimeFilterClickBind: function(self){
+      $('#time-filter-submit').unbind( 'click' ).bind( 'click', function() {
+        self.filterschanged();
+      });
+    },
+
+    unbindTimeFilterClick: function(){
+      $('#time-filter-submit').unbind( 'click' );
     },
 
     timeFilter: {
@@ -316,6 +324,17 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
           end: dateEnd
         };
       },
+      getThisYearRange: function(){
+        var dateStart = new Date();
+        var dateEnd = new Date();
+        dateStart = this.getBeginingOfYear(dateStart);
+
+        dateEnd = this.getEndOfYear(dateEnd);
+        return {
+          start: dateStart,
+          end: dateEnd
+        };
+      },
 
       getBeginingOfDay: function (date) {
         date.setHours(0);
@@ -346,7 +365,13 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
         date.setMonth(0);
         date = this.getBeginingOfMonth(date);
         return date;
-      }
+      },
+      getEndOfYear: function(date){
+        date.setFullYear(date.getFullYear() + 1);
+        date = this.getBeginingOfYear(date);
+        date.setMilliseconds(-1);
+        return date;
+      },
     }
   });
 

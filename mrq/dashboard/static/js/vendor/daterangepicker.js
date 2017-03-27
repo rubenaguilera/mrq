@@ -63,7 +63,6 @@
         this.buttonClasses = 'btn btn-sm';
         this.applyClass = 'btn-success';
         this.cancelClass = 'btn-default';
-        console.log(moment);
 
         this.locale = {
             direction: 'ltr',
