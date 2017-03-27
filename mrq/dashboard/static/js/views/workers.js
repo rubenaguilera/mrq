@@ -14,7 +14,8 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment
     initFilters: function() {
 
       this.filters = {
-        "showstopped": this.options.params.showstopped||""
+        "showstopped": this.options.params.showstopped||"",
+        "daterange": this.options.params.daterange||""
       };
       this.updateTimeFilterClickBind(this);
     },
@@ -183,7 +184,25 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment
 
       this.initDataTable(datatableConfig);
 
-    }
+    },
+
+    filterschanged:function(evt) {
+
+      var self = this;
+
+      if (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+
+      _.each(self.filters, function(v, k) {
+        self.filters[k] = self.$(".js-datatable-filters-"+k).val();
+      });
+
+      self.filters.daterange = $(".js-datatable-filters-daterange").val();
+
+      window.location = "/#workers?"+$.param(self.filters, true).replace(/\+/g, "%20");
+    },
   });
 
 });

@@ -16,6 +16,7 @@ import re
 from bson import ObjectId
 import json
 import argparse
+import datetime
 from werkzeug.serving import run_simple
 
 sys.path.insert(0, os.getcwd())
@@ -138,6 +139,19 @@ def get_workers():
     data = {"workers": list(cursor)}
     return jsonify(data)
 
+def get_datetime_from_str(str):
+    date_arr = str.split(" ")
+    date = date_arr[0].split("/")
+    time = date_arr[1].split(":")
+
+    year = int(date[2])
+    month = int(date[1])
+    day = int(date[0])
+
+    hours = int(time[0])
+    minutes = int(time[1])
+
+    return datetime.datetime(year, month, day, hours, minutes)
 
 def build_api_datatables_query(req):
     query = {}
@@ -174,6 +188,16 @@ def build_api_datatables_query(req):
                     query["params.%s" % key] = params_dict[key]
             except Exception as e:  # pylint: disable=broad-except
                 print("Error will converting form JSON: %s" % e)
+
+        # time filter
+        if (request.args.get("daterange")):
+            daterange = request.args.get("daterange").split(" - ")
+
+            date_start = get_datetime_from_str(daterange[0])
+
+            date_end = get_datetime_from_str(daterange[1])
+
+            query["datestarted"] = {"$gt": date_start, "$lt": date_end}
 
     return query
 
@@ -248,6 +272,16 @@ def api_datatables(unit):
 
         if request.args.get("showstopped"):
             query = {}
+
+        # time filter
+        if (request.args.get("daterange")):
+            daterange = request.args.get("daterange").split(" - ")
+
+            date_start = get_datetime_from_str(daterange[0])
+
+            date_end = get_datetime_from_str(daterange[1])
+
+            query["datestarted"] = {"$gt": date_start, "$lt": date_end}
 
     elif unit == "scheduled_jobs":
         collection = connections.mongodb_jobs.mrq_scheduled_jobs
