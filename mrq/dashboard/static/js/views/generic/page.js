@@ -8,6 +8,7 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
 
 
     alwaysRenderOnShow:false,
+    lastSelectedTimeFilterLabel: "",
 
     // This will be called once before the first render only.
     init:function() {
@@ -17,6 +18,7 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
     initok:false,
 
     initTimeFilter: function () {
+      var self = this;
       var todayRange = this.timeFilter.getTodayRange();
       var yesterdayRange = this.timeFilter.getYesterdayRange();
       var last7DaysRange = this.timeFilter.getLastXDays(7);
@@ -24,6 +26,24 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
       var thisMonthRange = this.timeFilter.getThisMonthRange();
       var lastMonthRange = this.timeFilter.getLastMonthRange();
       var thisYearRange = this.timeFilter.getThisYearRange();
+
+      var lastRangeUsed = this.cookieManager.getCookie("daterange");
+      var startRange = thisYearRange;
+      if(lastRangeUsed == "Today")
+        startRange = todayRange;
+      else if(lastRangeUsed == "Yesterday")
+        startRange = yesterdayRange;
+      else if(lastRangeUsed == "Last 7 Days")
+        startRange = last7DaysRange;
+      else if(lastRangeUsed == "Last 30 Days")
+        startRange = last30DaysRange;
+      else if(lastRangeUsed == "This Month")
+        startRange = thisMonthRange;
+      else if(lastRangeUsed == "Last Month")
+        startRange = lastMonthRange;
+      else if(lastRangeUsed == "This Year")
+        startRange = thisYearRange;
+
       $('#time_filter').daterangepicker({
         "timePicker24Hour": true,
         "timePicker": true,
@@ -60,9 +80,11 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
             thisYearRange.end
           ]
         },
+        "startDate": startRange.start,
+        "endDate": startRange.end,
       }, function (start, end, label) {
+        self.lastSelectedTimeFilterLabel = label;
       });
-      var self = this;
       $('.clear-date-range-filter').click(function(){
         $('#time_filter').val('');
       });
@@ -372,6 +394,30 @@ define(["backbone", "underscore", "jquery", "moment", "daterangepicker"],functio
         date.setMilliseconds(-1);
         return date;
       },
+    },
+
+    cookieManager: {
+      setCookie: function (cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      },
+      getCookie: function (cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
     }
   });
 

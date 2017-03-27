@@ -200,6 +200,7 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment
       });
 
       self.filters.daterange = $(".js-datatable-filters-daterange").val();
+      self.cookieManager.setCookie("daterange", self.lastSelectedTimeFilterLabel, 365);
 
       window.location = "/#workers?"+$.param(self.filters, true).replace(/\+/g, "%20");
     },
