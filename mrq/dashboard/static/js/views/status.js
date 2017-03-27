@@ -48,7 +48,6 @@ define(["jquery", "underscore", "views/generic/datatablepage", "models", "moment
             "sClass": "col-eta",
             "sType":"numeric",
             "mData":function(source, type, val) {
-              console.log()
               return (Math.round(self.getCounterSpeed("index.status."+source._id) * 100) / 100) + " jobs/second";
             }
           },
